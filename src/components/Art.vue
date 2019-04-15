@@ -1,7 +1,7 @@
 <template>
   <div class="Art">
     <p>{{ art.title }}</p>
-    <img :src="art.images[0].baseimageurl" :alt="art.title" />
+    <img v-if="art.imagecount" :src="art.images[0].baseimageurl" :alt="art.title" />
   </div>
 </template>
 
