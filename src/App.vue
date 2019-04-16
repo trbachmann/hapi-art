@@ -3,11 +3,25 @@
     <header>
       <h1>HAPI Art</h1>
       <p class="App--p">It’s not everyday you can visit the Havard Art Museum. Here’s a peak inside.</p>
+      <Nav 
+        v-on:update-view="updateView"
+        :photoDisabled="isPhotoDisabled"
+        :paintingDisabled="isPaintingDisabled"  
+      />
     </header>
     <Art 
       :key="paintings[currentImage].id" 
-      v-if="paintings.length" 
+      v-if="viewPaintings" 
       :art="paintings[currentImage]"
+      v-on:move-prev="moveToPrevImg"
+      v-on:move-next="moveToNextImg"
+      :prevDisabled="isPrevDisabled"
+      :nextDisabled="isNextDisabled"
+    />
+    <Art 
+      :key="photos[currentImage].id" 
+      v-else-if="viewPhotos" 
+      :art="photos[currentImage]"
       v-on:move-prev="moveToPrevImg"
       v-on:move-next="moveToNextImg"
       :prevDisabled="isPrevDisabled"
@@ -18,17 +32,22 @@
 
 <script>
 import Art from './components/Art';
+import Nav from './components/Nav';
 
 export default {
   name: 'app',
   components: {
-    Art
+    Art,
+    Nav
   },
   data() {
     return {
       paintings: [],
+      photos: [],
       error: '',
       currentImage: 0,
+      viewPhotos: false,
+      viewPaintings: false,
     }
   },
   computed: {
@@ -36,20 +55,55 @@ export default {
       return this.currentImage === 0 ? true : false;
     },
     isNextDisabled() {
-      return this.currentImage === this.paintings.length - 1 ? true : false;
+      let lengthToCheck;
+      if(this.viewPaintings === true) {
+        lengthToCheck = this.paintings.length;
+      } else {
+        lengthToCheck = this.photos.length;
+      }
+      return this.currentImage === lengthToCheck - 1 ? true : false;
+    },
+    isPhotoDisabled() {
+      return (this.viewPhotos === true) ? true : false;
+    },
+    isPaintingDisabled() {
+      return (this.viewPaintings === true) ? true : false;
     }
   },
   methods: {
     moveToNextImg() {
       this.currentImage += 1;
     },
-    moveToPrevImg(e) {
+    moveToPrevImg() {
       this.currentImage -= 1;
+    },
+    updateArtView() {
+      this.view = 'painting'
+    },
+    updateView() {
+      this.currentImage = 0;
+      this.viewPhotos = !this.viewPhotos
+      this.viewPaintings = !this.viewPaintings
+    },
+    getPhotos() {
+      const url = 'https://api.harvardartmuseums.org/object?apikey=' + process.env.VUE_APP_KEY + '&classification=Photographs&size=50';
+      fetch(url)
+      .then(response => response.json())
+      .then(result => {
+        return result.records.filter(
+          record => record.primaryimageurl !== null
+        )
+      })
+      .then(filteredResult => {
+        return filteredResult.filter(record => record.images)
+      })
+      .then(photoRecords => this.photos = [...this.photos, ...photoRecords])
+      .catch(error => this.error = error.message)
     }
   },
   created() {
     const url =
-    'https://api.harvardartmuseums.org/object?apikey=' + process.env.VUE_APP_KEY + '&classification=Paintings&size=50';
+    'https://api.harvardartmuseums.org/object?apikey=' + process.env.VUE_APP_KEY + '&classification=Paintings&size=30';
     
     fetch(url)
     .then(response => response.json())
@@ -62,6 +116,10 @@ export default {
       return filteredResult.filter(record => record.images)
     })
     .then(paintingRecords => this.paintings = [...this.paintings, ...paintingRecords])
+    .then(() => {
+      this.viewPaintings = !this.viewPaintings
+      this.getPhotos()
+    })
     .catch(error => this.error = error.message)
   }
 }
@@ -93,8 +151,6 @@ export default {
   }
 
   header {
-    box-shadow: -11px -9px 2px 0px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0, 0, 0, 0.06);
-    height: 140px;
     padding-top: 10px;
     background-color: #f1ebe7;
     margin-bottom: 20px;

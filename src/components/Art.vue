@@ -15,10 +15,10 @@
       </button>
     </div>
     <div v-for="person in art.people">
-      <p>People:</p>
+      <p class="App--p--margin">People:</p>
       <p :person="person">{{ person.displayname }}</p>
     </div>
-    <p>Credit:</p>
+    <p class="App--p--margin">Credit:</p>
     <p>{{ art.creditline }}</p>
   </div>
 </template>
@@ -46,8 +46,13 @@ export default {
     align-items: center;
   }
 
+  .App--p--margin {
+    margin: 12px 0 0;
+    font-weight: bolder;
+  }
+
   h3 {
-    height: 100px;
+    height: 50px;
   }
 
   img {  
