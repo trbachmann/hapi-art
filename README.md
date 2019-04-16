@@ -1,6 +1,8 @@
 # HAPI Art
 Wisihing you could visit the Harvard Art Museum, but not able to make the trip? HAPI Art is an application where users can get a sneak peak at some of the art currently and previously on display at the Harvard Art Museum. Art data is pulled from the [Harvard Art Museum API](https://www.harvardartmuseums.org/collections/api)  . 
 
+### See It Live
+https://hapi-art.herokuapp.com/
 ### Project setup
 Clone this repo: `git clone git@github.com:trbachmann/hapi-art.git`  
 Run `npm install` from the root directory  
