@@ -77,9 +77,6 @@ export default {
     moveToPrevImg() {
       this.currentImage -= 1;
     },
-    updateArtView() {
-      this.view = 'painting'
-    },
     updateView() {
       this.currentImage = 0;
       this.viewPhotos = !this.viewPhotos
