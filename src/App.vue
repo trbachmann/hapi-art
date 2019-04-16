@@ -90,15 +90,17 @@ export default {
       fetch(url)
       .then(response => response.json())
       .then(result => {
-        return result.records.filter(
-          record => record.primaryimageurl !== null
-        )
-      })
-      .then(filteredResult => {
-        return filteredResult.filter(record => record.images)
+        const filteredResult = this.filterByImageUrl(result.records)
+        return this.filterByImages(filteredResult)
       })
       .then(photoRecords => this.photos = [...this.photos, ...photoRecords])
       .catch(error => this.error = error.message)
+    },
+    filterByImageUrl(arr) {
+      return arr.filter(item => item.primaryimageurl !== null)
+    },
+    filterByImages(arr) {
+      return arr.filter(record => record.images)
     }
   },
   created() {
@@ -108,12 +110,8 @@ export default {
     fetch(url)
     .then(response => response.json())
     .then(result => {
-      return result.records.filter(
-        record => record.primaryimageurl !== null
-      )
-    })
-    .then(filteredResult => {
-      return filteredResult.filter(record => record.images)
+      const filteredResult = this.filterByImageUrl(result.records)
+      return this.filterByImages(filteredResult)
     })
     .then(paintingRecords => this.paintings = [...this.paintings, ...paintingRecords])
     .then(() => {
